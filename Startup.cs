@@ -22,6 +22,7 @@ namespace ExpenseTrackerBackend
         {
             services.AddDbContext<ExpenseTrackerBackendContext>(options =>
             options.UseNpgsql(Configuration.GetConnectionString("ExpenseTrackerBackendContext")));
+            services.AddCors();
             services.AddControllers();
         }
 
@@ -32,6 +33,12 @@ namespace ExpenseTrackerBackend
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+            );
 
             app.UseHttpsRedirection();
 
