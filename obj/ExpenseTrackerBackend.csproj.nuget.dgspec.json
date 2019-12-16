@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/alejandro/Documents/Personal Projects/expense-tracker-backend/ExpenseTrackerBackend/ExpenseTrackerBackend.csproj": {}
+    "/home/alejandro/Documents/Personal Projects/ExpenseTrackerBackend/ExpenseTrackerBackend.csproj": {}
   },
   "projects": {
-    "/home/alejandro/Documents/Personal Projects/expense-tracker-backend/ExpenseTrackerBackend/ExpenseTrackerBackend.csproj": {
+    "/home/alejandro/Documents/Personal Projects/ExpenseTrackerBackend/ExpenseTrackerBackend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/alejandro/Documents/Personal Projects/expense-tracker-backend/ExpenseTrackerBackend/ExpenseTrackerBackend.csproj",
+        "projectUniqueName": "/home/alejandro/Documents/Personal Projects/ExpenseTrackerBackend/ExpenseTrackerBackend.csproj",
         "projectName": "ExpenseTrackerBackend",
-        "projectPath": "/home/alejandro/Documents/Personal Projects/expense-tracker-backend/ExpenseTrackerBackend/ExpenseTrackerBackend.csproj",
+        "projectPath": "/home/alejandro/Documents/Personal Projects/ExpenseTrackerBackend/ExpenseTrackerBackend.csproj",
         "packagesPath": "/home/alejandro/.nuget/packages/",
-        "outputPath": "/home/alejandro/Documents/Personal Projects/expense-tracker-backend/ExpenseTrackerBackend/obj/",
+        "outputPath": "/home/alejandro/Documents/Personal Projects/ExpenseTrackerBackend/obj/",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "/usr/share/dotnet/sdk/NuGetFallbackFolder"
@@ -38,6 +38,26 @@
       },
       "frameworks": {
         "netcoreapp3.1": {
+          "dependencies": {
+            "Microsoft.EntityFrameworkCore.Design": {
+              "include": "Runtime, Build, Native, ContentFiles, Analyzers, BuildTransitive",
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[3.1.0, )"
+            },
+            "Microsoft.EntityFrameworkCore.SqlServer": {
+              "target": "Package",
+              "version": "(, )"
+            },
+            "Microsoft.VisualStudio.Web.CodeGeneration.Design": {
+              "target": "Package",
+              "version": "[3.1.0, )"
+            },
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
+              "target": "Package",
+              "version": "[3.1.0, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",
