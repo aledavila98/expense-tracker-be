@@ -2,15 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ExpenseTrackerBackend.Data;
 using ExpenseTrackerBackend.Models;
 
 namespace ExpenseTrackerBackend.Controllers
 {
-    public class PaymentController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class PaymentController : ControllerBase
     {
         private readonly ExpenseTrackerBackendContext _context;
 
@@ -19,137 +21,85 @@ namespace ExpenseTrackerBackend.Controllers
             _context = context;
         }
 
-        // GET: Payment
-        public async Task<IActionResult> Index()
+        // GET: api/Payment
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Payment>>> GetPayment()
         {
-            var expenseTrackerBackendContext = _context.Payment.Include(p => p.Category);
-            return View(await expenseTrackerBackendContext.ToListAsync());
+            return await _context.Payment.ToListAsync();
         }
 
-        // GET: Payment/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: api/Payment/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Payment>> GetPayment(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var payment = await _context.Payment
-                .Include(p => p.Category)
-                .FirstOrDefaultAsync(m => m.ID == id);
-            if (payment == null)
-            {
-                return NotFound();
-            }
-
-            return View(payment);
-        }
-
-        // GET: Payment/Create
-        public IActionResult Create()
-        {
-            ViewData["CategoryId"] = new SelectList(_context.Category, "ID", "ID");
-            return View();
-        }
-
-        // POST: Payment/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,paymentNum,amount,CategoryId")] Payment payment)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(payment);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["CategoryId"] = new SelectList(_context.Category, "ID", "ID", payment.CategoryId);
-            return View(payment);
-        }
-
-        // GET: Payment/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var payment = await _context.Payment.FindAsync(id);
+
             if (payment == null)
             {
                 return NotFound();
             }
-            ViewData["CategoryId"] = new SelectList(_context.Category, "ID", "ID", payment.CategoryId);
-            return View(payment);
+
+            return payment;
         }
 
-        // POST: Payment/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,paymentNum,amount,CategoryId")] Payment payment)
+        // PUT: api/Payment/5
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
+        // more details see https://aka.ms/RazorPagesCRUD.
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutPayment(int id, Payment payment)
         {
             if (id != payment.ID)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            if (ModelState.IsValid)
+            _context.Entry(payment).State = EntityState.Modified;
+
+            try
             {
-                try
-                {
-                    _context.Update(payment);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PaymentExists(payment.ID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                await _context.SaveChangesAsync();
             }
-            ViewData["CategoryId"] = new SelectList(_context.Category, "ID", "ID", payment.CategoryId);
-            return View(payment);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!PaymentExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
 
-        // GET: Payment/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // POST: api/Payment
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
+        // more details see https://aka.ms/RazorPagesCRUD.
+        [HttpPost]
+        public async Task<ActionResult<Payment>> PostPayment(Payment payment)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            _context.Payment.Add(payment);
+            await _context.SaveChangesAsync();
 
-            var payment = await _context.Payment
-                .Include(p => p.Category)
-                .FirstOrDefaultAsync(m => m.ID == id);
+            return CreatedAtAction("GetPayment", new { id = payment.ID }, payment);
+        }
+
+        // DELETE: api/Payment/5
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<Payment>> DeletePayment(int id)
+        {
+            var payment = await _context.Payment.FindAsync(id);
             if (payment == null)
             {
                 return NotFound();
             }
 
-            return View(payment);
-        }
-
-        // POST: Payment/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var payment = await _context.Payment.FindAsync(id);
             _context.Payment.Remove(payment);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return payment;
         }
 
         private bool PaymentExists(int id)

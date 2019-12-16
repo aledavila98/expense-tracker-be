@@ -2,15 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using ExpenseTrackerBackend.Data;
 using ExpenseTrackerBackend.Models;
 
 namespace ExpenseTrackerBackend.Controllers
 {
-    public class CategoryController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class CategoryController : ControllerBase
     {
         private readonly ExpenseTrackerBackendContext _context;
 
@@ -19,130 +21,85 @@ namespace ExpenseTrackerBackend.Controllers
             _context = context;
         }
 
-        // GET: Category
-        public async Task<IActionResult> Index()
+        // GET: api/Category
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<Category>>> GetCategory()
         {
-            return View(await _context.Category.ToListAsync());
+            return await _context.Category.ToListAsync();
         }
 
-        // GET: Category/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: api/Category/5
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Category>> GetCategory(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var category = await _context.Category
-                .FirstOrDefaultAsync(m => m.ID == id);
-            if (category == null)
-            {
-                return NotFound();
-            }
-
-            return View(category);
-        }
-
-        // GET: Category/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Category/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("ID,name")] Category category)
-        {
-            if (ModelState.IsValid)
-            {
-                _context.Add(category);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(category);
-        }
-
-        // GET: Category/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var category = await _context.Category.FindAsync(id);
+
             if (category == null)
             {
                 return NotFound();
             }
-            return View(category);
+
+            return category;
         }
 
-        // POST: Category/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,name")] Category category)
+        // PUT: api/Category/5
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
+        // more details see https://aka.ms/RazorPagesCRUD.
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutCategory(int id, Category category)
         {
             if (id != category.ID)
             {
-                return NotFound();
+                return BadRequest();
             }
 
-            if (ModelState.IsValid)
+            _context.Entry(category).State = EntityState.Modified;
+
+            try
             {
-                try
-                {
-                    _context.Update(category);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CategoryExists(category.ID))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
+                await _context.SaveChangesAsync();
             }
-            return View(category);
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!CategoryExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
         }
 
-        // GET: Category/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // POST: api/Category
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
+        // more details see https://aka.ms/RazorPagesCRUD.
+        [HttpPost]
+        public async Task<ActionResult<Category>> PostCategory(Category category)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            _context.Category.Add(category);
+            await _context.SaveChangesAsync();
 
-            var category = await _context.Category
-                .FirstOrDefaultAsync(m => m.ID == id);
+            return CreatedAtAction("GetCategory", new { id = category.ID }, category);
+        }
+
+        // DELETE: api/Category/5
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<Category>> DeleteCategory(int id)
+        {
+            var category = await _context.Category.FindAsync(id);
             if (category == null)
             {
                 return NotFound();
             }
 
-            return View(category);
-        }
-
-        // POST: Category/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var category = await _context.Category.FindAsync(id);
             _context.Category.Remove(category);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return category;
         }
 
         private bool CategoryExists(int id)
