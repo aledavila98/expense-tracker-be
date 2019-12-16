@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 
 namespace ExpenseTrackerBackend.Models
 {
@@ -7,5 +8,7 @@ namespace ExpenseTrackerBackend.Models
     {
         public int ID { get; set; }
         public string name { get; set; }
+
+        public List<Payment> Payments { get; set; }
     }
 }
