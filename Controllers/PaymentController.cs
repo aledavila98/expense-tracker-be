@@ -25,14 +25,14 @@ namespace ExpenseTrackerBackend.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Payment>>> GetPayment()
         {
-            return await _context.Payment.ToListAsync();
+            return await _context.Payment.Include(p => p.Category).ToListAsync();
         }
 
         // GET: api/Payment/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Payment>> GetPayment(int id)
         {
-            var payment = await _context.Payment.FindAsync(id);
+            var payment = await _context.Payment.Include(p => p.Category).Where(p => p.ID == id).FirstAsync();
 
             if (payment == null)
             {

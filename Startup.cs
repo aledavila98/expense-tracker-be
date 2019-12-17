@@ -23,7 +23,8 @@ namespace ExpenseTrackerBackend
             services.AddDbContext<ExpenseTrackerBackendContext>(options =>
             options.UseNpgsql(Configuration.GetConnectionString("ExpenseTrackerBackendContext")));
             services.AddCors();
-            services.AddControllers();
+            services.AddControllers(option => option.EnableEndpointRouting = false)
+            .AddNewtonsoftJson(opt => opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
