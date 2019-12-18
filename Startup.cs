@@ -20,14 +20,8 @@ namespace ExpenseTrackerBackend
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var ConnectionString = "";
-            if(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Production") 
-                ConnectionString = "expenseTrackerConnectionProduction";
-            else 
-                ConnectionString = "ExpenseTrackerBackendContext";
-
             services.AddDbContext<ExpenseTrackerBackendContext>(options =>
-                options.UseNpgsql(Configuration.GetConnectionString(ConnectionString)));
+                options.UseNpgsql(Configuration.GetConnectionString("expenseTrackerConnectionProduction")));
             services.BuildServiceProvider().GetService<ExpenseTrackerBackendContext>().Database.Migrate();
             services.AddCors();
             services.AddControllers(option => option.EnableEndpointRouting = false)
